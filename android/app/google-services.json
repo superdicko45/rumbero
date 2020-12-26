@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "973942788885",
+    "firebase_url": "https://rumbero-80ebf.firebaseio.com",
+    "project_id": "rumbero-80ebf",
+    "storage_bucket": "rumbero-80ebf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973942788885:android:3394ede67fab0aa8828f1c",
+        "android_client_info": {
+          "package_name": "com.example.rumbero"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973942788885-sd2ot8p56ne16prf939n9ofstu87c2qs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rumbero",
+            "certificate_hash": "b8445797ccff3978bf48310c39b5ca7b0409df54"
+          }
+        },
+        {
+          "client_id": "973942788885-9qkstrlml2g22vsevqoo49vbt937ppdj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz7jw2frEDK6kpJS8oojP9epVUgnY9doA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973942788885-9qkstrlml2g22vsevqoo49vbt937ppdj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
