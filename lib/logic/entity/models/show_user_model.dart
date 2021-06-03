@@ -1,4 +1,3 @@
-
 import 'redes_model.dart';
 import 'category_model.dart';
 import 'galeria_model.dart';
@@ -20,32 +19,32 @@ class User {
   bool uploadImg;
   bool error;
 
-  User({
-    this.usuarioId,
-    this.username,
-    this.nombre,
-    this.fotoPerfil,
-    this.descripcion,
-    this.tipoUsuario,
-    this.seguidores,
-    this.seguidos,
-    this.redes,
-    this.categorias,
-    this.galeria,
-    this.eventos,
-    this.uploadImg
-  });
+  User(
+      {this.usuarioId,
+      this.username,
+      this.nombre,
+      this.fotoPerfil,
+      this.descripcion,
+      this.tipoUsuario,
+      this.seguidores,
+      this.seguidos,
+      this.redes,
+      this.categorias,
+      this.galeria,
+      this.eventos,
+      this.uploadImg});
 
   User.fromJson(Map<String, dynamic> json) {
-    usuarioId   = json['user']['usuario_id'];
-    username    = json['user']['username'];
-    nombre      = json['user']['nombre'];
-    fotoPerfil  = json['user']['foto_perfil'];
+    usuarioId = json['user']['usuario_id'];
+    username = json['user']['username'];
+    nombre = json['user']['nombre'];
+    fotoPerfil = json['user']['foto_perfil'];
     descripcion = json['user']['descripcion'];
     tipoUsuario = json['user']['tipo_usuario'];
-    seguidores  = json['user']['seguidores'];
-    seguidos    = json['user']['seguidos'];
-    uploadImg   = json['user']['upload_img'] == 1 ? true : false;
+    seguidores = json['user']['seguidores'];
+    seguidos = json['user']['seguidos'];
+    uploadImg = json['user']['upload_img'] == 1 ? true : false;
+    error = false;
 
     if (json['redes'] != null) {
       redes = new List<Redes>();

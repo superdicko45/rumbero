@@ -16,8 +16,8 @@ class EventsPage extends StatefulWidget {
   _EventsPageState createState() => _EventsPageState();
 }
 
-class _EventsPageState extends State<EventsPage> with AutomaticKeepAliveClientMixin{
-
+class _EventsPageState extends State<EventsPage>
+    with AutomaticKeepAliveClientMixin {
   EventsBloc eventsBloc = new EventsBloc();
 
   @override
@@ -27,7 +27,7 @@ class _EventsPageState extends State<EventsPage> with AutomaticKeepAliveClientMi
   }
 
   @override
-  void dispose(){
+  void dispose() {
     eventsBloc.dispose();
     super.dispose();
   }
@@ -41,117 +41,104 @@ class _EventsPageState extends State<EventsPage> with AutomaticKeepAliveClientMi
   @override
   bool get wantKeepAlive => true;
 
-  Widget _cercanos(List<Zone> zonas){
-    
-    return zonas.isNotEmpty 
-      ? ZoneSlider(zonas: zonas)
-      : _emptyText(); 
+  Widget _cercanos(List<Zone> zonas) {
+    return zonas.isNotEmpty ? ZoneSlider(zonas: zonas) : _emptyText();
   }
 
-  Widget _recientes(List<EventModelResponse> eventos){
-    
-    return eventos.isNotEmpty 
-      ? CardSlider(events: eventos)
-      : _emptyText();   
+  Widget _recientes(List<EventModelResponse> eventos) {
+    return eventos.isNotEmpty ? CardSlider(events: eventos) : _emptyText();
   }
 
-  Widget _paraHoy(List<EventModelResponse> eventos){
-    
-    return eventos.isNotEmpty 
-      ? CardSlider(events: eventos)
-      : _emptyText();        
+  Widget _paraHoy(List<EventModelResponse> eventos) {
+    return eventos.isNotEmpty ? CardSlider(events: eventos) : _emptyText();
   }
 
-  Widget _recomendados(List<EventModelResponse> eventos){
-
-    return eventos.isNotEmpty 
-      ? CardSlider(events: eventos)
-      : _emptyText();  
+  Widget _recomendados(List<EventModelResponse> eventos) {
+    return eventos.isNotEmpty ? CardSlider(events: eventos) : _emptyText();
   }
 
-  Widget _loader(){
+  Widget _loader() {
     return Center(
       child: CircularProgressIndicator(),
-    );  
+    );
   }
 
-  Widget _body(context){
-    
+  Widget _body(context) {
     return RefreshIndicator(
       onRefresh: eventsBloc.getEventos,
       child: StreamBuilder<EventResponse>(
-        stream: eventsBloc.subject.stream,
-        builder: (context, snapshot) {
-          return snapshot.hasData 
-            ? _main(snapshot.data)
-            : _loader();
-        }
+          stream: eventsBloc.subject.stream,
+          builder: (context, snapshot) {
+            return snapshot.hasData ? _main(snapshot.data) : _loader();
+          }),
+    );
+  }
+
+  Widget _main(EventResponse eventResponse) {
+    return !eventResponse.error
+        ? ListView(
+            children: <Widget>[
+              _header('Nuestra recomendación!'),
+              _recomendados(eventResponse.recomendados),
+              _header('Para el día de hoy!'),
+              _paraHoy(eventResponse.paraHoy),
+              _header('Agregados recientemente!'),
+              _recientes(eventResponse.recientes),
+              _header('Cerca de tu zona'),
+              _cercanos(eventResponse.cercanos),
+              SizedBox(
+                height: 10,
+              )
+            ],
+          )
+        : _empty();
+  }
+
+  Widget _empty() {
+    return Center(
+      child: NoInfo(
+        svg: 'events.svg',
+        text: 'Algo sucedio',
       ),
     );
   }
 
-  Widget _main(EventResponse eventResponse){
-    return !eventResponse.error 
-      ? ListView(
-          children: <Widget>[
-            _header('Nuestra recomendación!'),
-            _recomendados(eventResponse.recomendados),
-            _header('Para el día de hoy!'),
-            _paraHoy(eventResponse.paraHoy),
-            _header('Agregados recientemente!'),
-            _recientes(eventResponse.recientes),
-            _header('Cerca de tu zona'),
-            _cercanos(eventResponse.cercanos),
-            SizedBox(height: 10,)
-          ],
-        )
-      : _empty();        
-  }
-
-  Widget _empty() {
-    
-    return Center(
-      child: NoInfo(svg: 'events.svg', text: 'Algo sucedio',),
-    );
-  }
-
-  Widget _header(String title){
+  Widget _header(String title) {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(title,
+          Text(
+            title,
             style: new TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-              letterSpacing: 1.0
-            ),
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+                letterSpacing: 1.0),
           ),
         ],
       ),
     );
   }
 
-  Widget _emptyText(){
+  Widget _emptyText() {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text('Sin resultados, intenta volver a recargar!',
+          Text(
+            'Sin resultados, intenta volver a recargar!',
             overflow: TextOverflow.ellipsis,
             style: new TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.normal,
-              fontSize: 14.0,
-              letterSpacing: 1.0
-            ),
+                color: Colors.black87,
+                fontWeight: FontWeight.normal,
+                fontSize: 14.0,
+                letterSpacing: 1.0),
           ),
         ],
       ),
     );
   }
-
 }

@@ -22,7 +22,7 @@ class RegisterBloc with ValidatorProvider{
       if(0 != _passController.value.compareTo(confirmPassword)) _repsController.addError("Passwords no coincide");      
     });
 
-  Stream<bool> get formValidStream => Observable.combineLatest4(
+  Stream<bool> get formValidStream => Rx.combineLatest4(
     nameStream,  
     emailStream, 
     passStream, 

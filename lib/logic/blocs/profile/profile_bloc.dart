@@ -25,6 +25,8 @@ class ProfileBloc{
   Stream<bool>   get upldStream  => _uploadController;
   
   String get usIdStream  => _usIdController.value.toString();
+  String get usNaStream  => _nameController.value.toString();
+  String get usImStream  => _perfilController.value.toString();
 
   Future<void> initState() async {
 

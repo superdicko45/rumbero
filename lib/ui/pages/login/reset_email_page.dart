@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:rumbero/ui/styles/theme.dart' as Theme;
 
-import 'package:rumbero/logic/repository/login_repository.dart';
 import 'package:rumbero/logic/blocs/login/reset_email_bloc.dart';
 import 'package:rumbero/logic/entity/responses/login_response.dart';
-
 
 class ResetEmail extends StatefulWidget {
   ResetEmail({Key key}) : super(key: key);
@@ -18,16 +15,17 @@ class ResetEmail extends StatefulWidget {
 }
 
 class _ResetEmailState extends State<ResetEmail> {
-
-  final GlobalKey<ScaffoldState> _scaffoldstate = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldstate =
+      new GlobalKey<ScaffoldState>();
   final ResetEmailBloc _resetEmailBloc = new ResetEmailBloc();
 
   @override
   void initState() {
     super.initState();
     _resetEmailBloc.emailStream;
+    _resetEmailBloc.stateStream;
   }
-  
+
   @override
   void dispose() {
     super.dispose();
@@ -36,44 +34,30 @@ class _ResetEmailState extends State<ResetEmail> {
 
   @override
   Widget build(BuildContext context) {
-
     final _screenSize = MediaQuery.of(context).size;
     final _orientation = MediaQuery.of(context).orientation;
 
     return Scaffold(
       key: _scaffoldstate,
       body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: Theme.Colors.myBoxDecBackG,
-        child: _orientation == Orientation.landscape 
-          ? _vertital(_screenSize)
-          : _horizontal(_screenSize)
-      ),
+          height: double.infinity,
+          width: double.infinity,
+          decoration: Theme.Colors.myBoxDecBackG,
+          child: _orientation == Orientation.landscape
+              ? _vertital(_screenSize)
+              : _horizontal(_screenSize)),
     );
   }
 
   Future<void> _send() async {
+    LoginResponse _response = await _resetEmailBloc.sendMail();
 
-    String _email = _resetEmailBloc.email;
-    await Provider.of<LoginRepository>(context, listen: false).resetPass(_email);
-
-    _showSnackBar();
-
-  }
-
-  void _showSnackBar() async{
-    
-    LoginResponse _response = Provider.of<LoginRepository>(context, listen: false).getResponse();
-
-    var _snackBar = SnackBar(
-      content: Text(_response.errorMessage)
-    );
+    var _snackBar = SnackBar(content: Text(_response.errorMessage));
 
     _scaffoldstate.currentState.showSnackBar(_snackBar);
   }
 
-  Widget _horizontal(Size _screenSize){
+  Widget _horizontal(Size _screenSize) {
     return ListView(
       children: <Widget>[
         _backIcon(),
@@ -81,10 +65,10 @@ class _ResetEmailState extends State<ResetEmail> {
         _form(_screenSize.width),
         _singIn(),
       ],
-    );  
+    );
   }
 
-  Widget _vertital(Size _screenSize){
+  Widget _vertital(Size _screenSize) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -93,7 +77,7 @@ class _ResetEmailState extends State<ResetEmail> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _backIcon(),  
+              _backIcon(),
               _logo(_screenSize.height * .2),
             ],
           ),
@@ -112,23 +96,22 @@ class _ResetEmailState extends State<ResetEmail> {
     );
   }
 
-  Widget _backIcon(){
+  Widget _backIcon() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 36,
-          ), 
-          onPressed: () => Navigator.pop(context)
-        ),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 36,
+            ),
+            onPressed: () => Navigator.pop(context)),
       ],
     );
   }
 
-  Widget _logo(double alto){
+  Widget _logo(double alto) {
     return Column(
       children: [
         Container(
@@ -137,12 +120,12 @@ class _ResetEmailState extends State<ResetEmail> {
             child: Text(
               'Recupera tu Password',
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 35,
-                fontFamily: "WorkSansMedium"
-              ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 32,
+                  fontFamily: "WorkSansMedium"),
             ),
           ),
         ),
@@ -157,7 +140,7 @@ class _ResetEmailState extends State<ResetEmail> {
     );
   }
 
-  Widget _form(double width){
+  Widget _form(double width) {
     return Stack(
       alignment: Alignment(0.0, 1.25),
       overflow: Overflow.visible,
@@ -168,7 +151,7 @@ class _ResetEmailState extends State<ResetEmail> {
     );
   }
 
-  Widget _formRegister(double width){
+  Widget _formRegister(double width) {
     return Card(
       elevation: 2.0,
       color: Colors.white,
@@ -180,31 +163,31 @@ class _ResetEmailState extends State<ResetEmail> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0, left: 25.0, right: 25.0),
+              padding: EdgeInsets.only(
+                  top: 15.0, bottom: 15.0, left: 25.0, right: 25.0),
               child: StreamBuilder<String>(
-                stream: _resetEmailBloc.emailStream,
-                builder: (context, snapshot) {
-                  return TextField(
-                    onChanged: _resetEmailBloc.changeEmail,
-                    keyboardType: TextInputType.emailAddress,
-                    style: TextStyle(
-                      fontFamily: "WorkSansSemiBold",
-                      fontSize: 16.0,
-                      color: Colors.black
-                    ),
-                    decoration: InputDecoration(
-                      errorText: snapshot.error,
-                      border: InputBorder.none,
-                      icon: Icon(
-                        FontAwesomeIcons.envelope,
-                        color: Colors.black,
+                  stream: _resetEmailBloc.emailStream,
+                  builder: (context, snapshot) {
+                    return TextField(
+                      onChanged: _resetEmailBloc.changeEmail,
+                      keyboardType: TextInputType.emailAddress,
+                      style: TextStyle(
+                          fontFamily: "WorkSansSemiBold",
+                          fontSize: 16.0,
+                          color: Colors.black),
+                      decoration: InputDecoration(
+                        errorText: snapshot.error,
+                        border: InputBorder.none,
+                        icon: Icon(
+                          FontAwesomeIcons.envelope,
+                          color: Colors.black,
+                        ),
+                        hintText: "Email",
+                        hintStyle: TextStyle(
+                            fontFamily: "WorkSansSemiBold", fontSize: 16.0),
                       ),
-                      hintText: "Email",
-                      hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 16.0),
-                    ),
-                  );
-                }
-              ),
+                    );
+                  }),
             ),
             Container(
               width: width * .8,
@@ -212,12 +195,11 @@ class _ResetEmailState extends State<ResetEmail> {
               color: Colors.grey[400],
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 15.0, left: 15.0, top: 30.0, bottom: 45.0),
+              padding: const EdgeInsets.only(
+                  right: 15.0, left: 15.0, top: 30.0, bottom: 45.0),
               child: Text(
                 'Envíaremos un códido de verificación a tu dirección de correo registrado.',
-                style: TextStyle(
-                  color: Colors.black54
-                ),
+                style: TextStyle(color: Colors.black54),
               ),
             )
           ],
@@ -226,66 +208,69 @@ class _ResetEmailState extends State<ResetEmail> {
     );
   }
 
-  Widget _registerButton(){
+  Widget _registerButton() {
     return Container(
-      decoration: Theme.Colors.myBoxDecButton,
-      child: MaterialButton(
-        onPressed: (){},
-        child: _buttonState()
-      )
+        decoration: Theme.Colors.myBoxDecButton,
+        child: MaterialButton(onPressed: () {}, child: _buttonState()));
+  }
+
+  Widget _buttonState() {
+    return StreamBuilder<stateType>(
+      stream: _resetEmailBloc.stateStream,
+      initialData: stateType.WAITING,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.data == stateType.SUCCESS)
+          return Icon(Icons.check, color: Colors.white);
+        else if (snapshot.data == stateType.LOADING) {
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          );
+        } else
+          return _button();
+      },
     );
   }
 
-  Widget _buttonState(){
-    
-    stateType _currentState = Provider.of<LoginRepository>(context).wichtState();
-    
-    if (_currentState == stateType.SUCCESS) return Icon(Icons.check, color: Colors.white);
-
-    else if (_currentState == stateType.LOADING) {
-      return CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      );
-    } 
-
-    else return _button();
+  Widget _button() {
+    return StreamBuilder<String>(
+        stream: _resetEmailBloc.emailStream,
+        builder: (context, snapshot) {
+          return MaterialButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 25.0),
+                child: Text(
+                  "RECUPERAR",
+                  style: TextStyle(
+                      color: !snapshot.hasData || snapshot.hasError
+                          ? Colors.grey
+                          : Colors.white,
+                      fontSize: 25.0,
+                      fontFamily: "WorkSansBold"),
+                ),
+              ),
+              onPressed: !snapshot.hasData || snapshot.hasError
+                  ? null
+                  : () => _send());
+        });
   }
 
-  Widget _button(){
-    return MaterialButton(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
-        child: Text(
-          "RECUPERAR",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 25.0,
-            fontFamily: "WorkSansBold"
-          ),
-        ),
-      ),
-      onPressed: () => _send()
-    );
-  }
-
-  Widget _singIn(){
+  Widget _singIn() {
     return Padding(
       padding: EdgeInsets.only(top: 25.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           FlatButton(
-            onPressed: () => Navigator.of(context).pushNamed('/login'),
-            child: Text(
-              "Iniciar sesión!",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.white,
-                fontSize: 16.0,
-                fontFamily: "WorkSansMedium"
-              ),
-            )
-          ),
+              onPressed: () => Navigator.of(context).pushNamed('/login'),
+              child: Text(
+                "Iniciar sesión!",
+                style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontFamily: "WorkSansMedium"),
+              )),
         ],
       ),
     );

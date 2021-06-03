@@ -4,15 +4,12 @@ class Ticket {
   String imagen;
   bool error;
 
-  Ticket({
-    this.imagen,
-    this.folio,
-    this.user
-  });
+  Ticket({this.imagen, this.folio, this.user});
 
   Ticket.fromJson(Map<String, dynamic> json) {
-    folio  = json['data']['usuario_evento_id'];
-    user   = json['data']['nombre'];
+    error = json['error'];
+    folio = json['data']['usuario_evento_id'];
+    user = json['data']['nombre'];
     imagen = json['data']['promocional'];
   }
 

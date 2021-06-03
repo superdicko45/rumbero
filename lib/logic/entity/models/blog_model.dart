@@ -3,6 +3,7 @@ class Blog {
   String titulo;
   String imagen;
   String createdAt;
+  String resumen;
   String username;
   String fotoPerfil;
   bool error;
@@ -13,20 +14,23 @@ class Blog {
       this.titulo,
       this.imagen,
       this.createdAt,
+      this.resumen,
       this.username,
       this.fotoPerfil,
       this.contenidos});
 
   Blog.fromJson(Map<String, dynamic> json) {
+    error = false;
     blogId = json['blog']['blog_id'];
     titulo = json['blog']['titulo'];
     imagen = json['blog']['imagen'];
+    resumen = json['blog']['resumen'];
     createdAt = json['blog']['created_at'];
-    username = json['blog']['username'];
+    username = json['blog']['nombre'];
     fotoPerfil = json['blog']['foto_perfil'];
-    if (json['blog']['contenidos'] != null) {
+    if (json['contenidos'] != null) {
       contenidos = new List<Contenidos>();
-      json['blog']['contenidos'].forEach((v) {
+      json['contenidos'].forEach((v) {
         contenidos.add(new Contenidos.fromJson(v));
       });
     }
@@ -47,5 +51,4 @@ class Contenidos {
     descripcion = json['descripcion'];
     imagen = json['imagen'];
   }
-
 }

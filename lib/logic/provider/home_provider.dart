@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rumbero/logic/entity/responses/home_response.dart';
 
-class HomeProvider{
-
+class HomeProvider {
   static String url = "https://rumbero.live/api/home/dashboard";
+  SharedPreferences _prefs;
 
-  Future<HomeResponse> getData(String city) async {
-    
-    final error = "Exception occured: 500 stackTrace: Fetch dashboard";
-    
+  Future<HomeResponse> getData() async {
+    final error =
+        "Ocurrío un error al cargar la información, intenta más tarde!";
+
+    String city = await getCurrentCity();
+
     try {
-      
       final response = await http.get('$url/$city');
-      
+
       if (response.statusCode == 200) {
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return HomeResponse.fromJson(json.decode(response.body));
@@ -23,9 +25,16 @@ class HomeProvider{
         return HomeResponse.withError(error);
       }
     } catch (e) {
-
       return HomeResponse.withError(error);
     }
+  }
 
+  Future<String> getCurrentCity() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    if (_prefs.containsKey('idCity'))
+      return _prefs.getInt('idCity').toString();
+    else
+      return '1';
   }
 }

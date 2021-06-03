@@ -7,46 +7,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rumbero/logic/entity/responses/login_response.dart';
 import 'package:rumbero/logic/entity/model_reponses/settings_model_response.dart';
 
-class SecurityProvider
-{
-
+class SecurityProvider {
   static String url = "https://rumbero.live/api/security";
   final FirebaseAuth _auth = FirebaseAuth.instance;
   SharedPreferences _prefs;
 
   Future<String> getEmail() async {
-
     String email = '';
 
     try {
-
-      FirebaseUser _user = await _auth.currentUser();
+      User _user = _auth.currentUser;
       email = _user.email;
-
-    }
-    catch(error){
+    } catch (error) {
       email = 'mail@mail.com';
     }
-    
-    return email;  
+
+    return email;
   }
 
-  Future<LoginResponse> updateEmail(String newEmail) async{
-    
+  Future<LoginResponse> updateEmail(String newEmail) async {
     LoginResponse _response = new LoginResponse();
     _response.error = true;
 
     try {
-
-      FirebaseUser _user = await _auth.currentUser();
+      User _user = _auth.currentUser;
 
       try {
-
         await _user.updateEmail(newEmail);
-      
+
         int _idUser = await _getIdUser();
 
-        Map data = {'usuario_id'  : _idUser, 'email' : newEmail};
+        Map data = {'usuario_id': _idUser, 'email': newEmail};
 
         String body = json.encode(data);
 
@@ -60,11 +51,9 @@ class SecurityProvider
           _prefs = await SharedPreferences.getInstance();
           _prefs.setString('email', newEmail);
           _response.error = false;
-          _response.errorMessage = 'Se actualizo tu info';
-        }
-        else 
+          _response.errorMessage = 'Se actualizó tu información';
+        } else
           _response.errorMessage = getErrorMessage('ERROR');
-
       } catch (error) {
         _response.errorMessage = getErrorMessage(error.code);
       }
@@ -80,100 +69,98 @@ class SecurityProvider
     _response.error = true;
 
     try {
-
-      FirebaseUser _user = await _auth.currentUser();
-      AuthCredential credential = EmailAuthProvider.getCredential(
+      User _user = _auth.currentUser;
+      AuthCredential credential = EmailAuthProvider.credential(
         email: _user.email,
         password: apass,
       );
 
       try {
-
         await _user.reauthenticateWithCredential(credential);
-        
-        try {
 
+        try {
           await _user.updatePassword(npass);
           _response.error = false;
-          _response.errorMessage = 'Se actualizo tu info';
-
+          _response.errorMessage = 'Se actualizo tu información';
         } catch (error) {
           _response.errorMessage = getErrorMessage(error.code);
-        }  
-          
+        }
       } catch (error) {
         _response.errorMessage = getErrorMessage(error.code);
       }
-
     } catch (error) {
       _response.errorMessage = getErrorMessage(error.code);
-    }  
+    }
 
     return _response;
   }
 
   Future<SettingsModelResponse> getSettings() async {
-
     int _idUser = await _getIdUser();
-    Map    data = {'usuario_id' : _idUser};
+    Map data = {'usuario_id': _idUser};
     String body = json.encode(data);
-    final error = "Exception occured: 500 stackTrace: Fetch user $url/settings - $_idUser";
-    
-    final response = await http.post(
-      '$url/settings',
-      headers: {"Content-Type": "application/json"},
-      body: body,
-    );
+    final error =
+        "Exception occured: 500 stackTrace: Fetch user $url/settings - $_idUser";
 
-    if (response.statusCode == 200) {
-      print(json.decode(response.body));
-      // Si el servidor devuelve una repuesta OK, parseamos el JSON
-      return SettingsModelResponse.fromJson(json.decode(response.body));
-    }
-    else {
-      // Si esta respuesta no fue OK, lanza un error.
-      print(error);
+    try {
+      final response = await http.post(
+        '$url/settings',
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print(json.decode(response.body));
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return SettingsModelResponse.fromJson(json.decode(response.body));
+      } else {
+        // Si esta respuesta no fue OK, lanza un error.
+        print(error);
+        return SettingsModelResponse.withError();
+      }
+    } catch (e) {
       return SettingsModelResponse.withError();
     }
   }
 
-  Future<LoginResponse> updateSettings(Map data) async{
-    
+  Future<LoginResponse> updateSettings(Map data) async {
     LoginResponse _response = new LoginResponse();
     _response.error = true;
-  
+
     int _idUser = await _getIdUser();
 
     data['usuario_id'] = _idUser;
 
     String body = json.encode(data);
 
-    print(body);
-    final response = await http.post(
-      '$url/updSettings',
-      headers: {"Content-Type": "application/json"},
-      body: body,
-    );
+    try {
+      final response = await http.post(
+        '$url/updSettings',
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
 
-    if (response.statusCode == 200) {
-      _response.error = false;
-      _response.errorMessage = 'Se actualizo tu info';
+      if (response.statusCode == 200) {
+        _response.error = false;
+        _response.errorMessage = 'Se actualizo tu información';
+      } else
+        _response.errorMessage =
+            "Ocurrío un error al guardar la información, intenta más tarde!";
+    } catch (e) {
+      _response.errorMessage =
+          "Ocurrío un error al guardar la información, intenta más tarde!";
     }
-    else 
-      _response.errorMessage = 'Ocurrío un problema!';
-    
+
     return _response;
   }
 
   Future<int> _getIdUser() async {
-
     _prefs = await SharedPreferences.getInstance();
     return _prefs.getInt('keyRumbero');
   }
 
   //Regresa una traduccion de acuerdo al error
-  String getErrorMessage(String error){
-
+  String getErrorMessage(String error) {
     print(error);
     String errorMessage;
 
@@ -207,7 +194,7 @@ class SecurityProvider
         break;
       case "ERROR_OPERATION_NOT_ALLOWED":
         errorMessage = "Operación no permitida.";
-        break;  
+        break;
       case "ERROR_EMAIL_ALREADY_IN_USE":
         errorMessage = "Esta cuenta de correo ya esta en uso.";
         break;
@@ -217,5 +204,4 @@ class SecurityProvider
 
     return errorMessage;
   }
-
 }

@@ -14,8 +14,8 @@ class SchoolsPage extends StatefulWidget {
   _SchoolsPageState createState() => _SchoolsPageState();
 }
 
-class _SchoolsPageState extends State<SchoolsPage> with AutomaticKeepAliveClientMixin{
-
+class _SchoolsPageState extends State<SchoolsPage>
+    with AutomaticKeepAliveClientMixin {
   AcademiasBloc _academiasBloc = new AcademiasBloc();
 
   @override
@@ -25,7 +25,7 @@ class _SchoolsPageState extends State<SchoolsPage> with AutomaticKeepAliveClient
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _academiasBloc.dispose();
     super.dispose();
   }
@@ -39,102 +39,101 @@ class _SchoolsPageState extends State<SchoolsPage> with AutomaticKeepAliveClient
   @override
   bool get wantKeepAlive => true;
 
-  Widget _rankeadas(List<AcademyModelResponse> rankeadas){
-    return rankeadas.isNotEmpty 
-      ? AcademySlider(academias: rankeadas)
-      : _emptyText();
+  Widget _rankeadas(List<AcademyModelResponse> rankeadas) {
+    return rankeadas.isNotEmpty
+        ? AcademySlider(academias: rankeadas)
+        : _emptyText();
   }
 
-  Widget _paraHoy(List<AcademyModelResponse> paraHoy){
-    return paraHoy.isNotEmpty 
-      ? AcademySlider(academias: paraHoy)
-      : _emptyText();
+  Widget _paraHoy(List<AcademyModelResponse> paraHoy) {
+    return paraHoy.isNotEmpty
+        ? AcademySlider(academias: paraHoy)
+        : _emptyText();
   }
 
-  Widget _recomendados(List<AcademyModelResponse> recomendadas){
-    return recomendadas.isNotEmpty 
-      ? AcademySlider(academias: recomendadas)
-      : _emptyText();
+  Widget _recomendados(List<AcademyModelResponse> recomendadas) {
+    return recomendadas.isNotEmpty
+        ? AcademySlider(academias: recomendadas)
+        : _emptyText();
   }
 
-  Widget _loader(){
+  Widget _loader() {
     return Center(
       child: CircularProgressIndicator(),
-    );  
+    );
   }
 
-  Widget _body(context){
-    
+  Widget _body(context) {
     return RefreshIndicator(
       onRefresh: _academiasBloc.getData,
       child: StreamBuilder<AcademyResponse>(
-        stream: _academiasBloc.subject.stream,
-        builder: (context, snapshot) {
-          return snapshot.hasData 
-            ? _main(snapshot.data)
-            : _loader();
-        }
+          stream: _academiasBloc.subject.stream,
+          builder: (context, snapshot) {
+            return snapshot.hasData ? _main(snapshot.data) : _loader();
+          }),
+    );
+  }
+
+  Widget _main(AcademyResponse academyResponse) {
+    return !academyResponse.error
+        ? ListView(
+            children: <Widget>[
+              _header('Nuestra recomendación!'),
+              _recomendados(academyResponse.recomendadas),
+              _header('Top evaluadas!'),
+              _rankeadas(academyResponse.recomendadas),
+              _header('Para tomar clase hoy!'),
+              _paraHoy(academyResponse.paraHoy),
+              SizedBox(
+                height: 10,
+              )
+            ],
+          )
+        : _empty();
+  }
+
+  Widget _empty() {
+    return Center(
+      child: NoInfo(
+        svg: 'events.svg',
+        text: 'Algo sucedio',
       ),
     );
   }
 
-  Widget _main(AcademyResponse academyResponse){
-    
-    return !academyResponse.error 
-      ? ListView(
-          children: <Widget>[
-            _header('Nuestra recomendación!'),
-            _recomendados(academyResponse.recomendadas),
-            _header('Top evaluadas!'),
-            _rankeadas(academyResponse.recomendadas),
-            _header('Para tomar clase hoy!'),
-            _paraHoy(academyResponse.paraHoy),
-            SizedBox(height: 10,)
-          ],
-        )
-      : _empty(); 
-  }
-
-  Widget _empty() {
-    
-    return Center(
-      child: NoInfo(svg: 'events.svg', text: 'Algo sucedio',),
-    );
-  }
-
-  Widget _header(String title){
+  Widget _header(String title) {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(title,
+          Text(
+            title,
             style: new TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-              letterSpacing: 1.0
-            ),
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+                letterSpacing: 1.0),
           ),
         ],
       ),
     );
   }
 
-  Widget _emptyText(){
+  Widget _emptyText() {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text('Sin resultados, intenta volver a recargar!',
+          Text(
+            'Sin resultados, intenta volver a recargar!',
             overflow: TextOverflow.ellipsis,
             style: new TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.normal,
-              fontSize: 14.0,
-              letterSpacing: 1.0
-            ),
+                color: Colors.black87,
+                fontWeight: FontWeight.normal,
+                fontSize: 14.0,
+                letterSpacing: 1.0),
           ),
         ],
       ),

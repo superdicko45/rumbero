@@ -9,31 +9,30 @@ class MyUser {
   String descripcion;
   String tipoUsuario;
   List<int> categorias;
+  List<General> ciudades;
   List<General> catDisponibles; //categorias disponibles
   List<General> tipDisponibles; //tipos usuarios disponibles
   bool error;
 
-  MyUser({
-    this.usuarioId,
-    this.tipoUsuarioId,
-    this.username,
-    this.nombre,
-    this.fotoPerfil,
-    this.descripcion,
-    this.tipoUsuario,
-    this.categorias
-  });
+  MyUser(
+      {this.usuarioId,
+      this.tipoUsuarioId,
+      this.username,
+      this.nombre,
+      this.fotoPerfil,
+      this.descripcion,
+      this.tipoUsuario,
+      this.categorias});
 
   MyUser.fromJson(Map<String, dynamic> json) {
-
-    usuarioId     = json['user']['usuario_id'];
+    usuarioId = json['user']['usuario_id'];
     tipoUsuarioId = json['user']['tipo_usuario_id'];
-    username      = json['user']['username'] != null ? json['user']['username'] : '';
-    nombre        = json['user']['nombre'];
-    fotoPerfil    = json['user']['foto_perfil'];
-    descripcion   = json['user']['descripcion'];
-    tipoUsuario   = json['user']['tipo_usuario'];
-    
+    username = json['user']['username'] != null ? json['user']['username'] : '';
+    nombre = json['user']['nombre'];
+    fotoPerfil = json['user']['foto_perfil'];
+    descripcion = json['user']['descripcion'];
+    tipoUsuario = json['user']['tipo_usuario'];
+
     if (json['generos'] != null) {
       categorias = new List<int>();
       json['generos'].forEach((v) {
@@ -54,7 +53,13 @@ class MyUser {
         tipDisponibles.add(new General.fromJson(v));
       });
     }
-    
+
+    if (json['ciudades'] != null) {
+      ciudades = new List<General>();
+      json['ciudades'].forEach((v) {
+        ciudades.add(new General.fromJson(v));
+      });
+    }
   }
 
   MyUser.withError(String errorValue) : error = true;

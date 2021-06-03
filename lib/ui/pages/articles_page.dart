@@ -1,161 +1,152 @@
 import 'package:flutter/material.dart';
 
 import 'package:rumbero/ui/styles/theme.dart' as Theme;
-import 'package:rumbero/ui/widgets/noInfo_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:rumbero/ui/widgets/redes_wrap_widget.dart';
+import 'package:rumbero/logic/entity/models/marca_model.dart';
 
-class ArticlesPage extends StatefulWidget {
+class ArticlesPage extends StatelessWidget {
+  final Marca marca;
+  final String tagId;
 
-  final dynamic params;
+  const ArticlesPage({@required this.marca, @required this.tagId});
 
-  const ArticlesPage({
-    @required this.params,
-    Key key
-  }) : super(key: key);
+  void _launchContacto(String url) async {
+    print(url);
 
-  @override
-  _ArticlesPageState createState() => _ArticlesPageState();
-}
-
-class _ArticlesPageState extends State<ArticlesPage> {
-
-
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose(){
-    super.dispose();
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false);
+    } else {
+      throw "Couldn't launch URL";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     final _screenSize = MediaQuery.of(context).size;
     final _orientation = MediaQuery.of(context).orientation;
+    double _wCard = (_screenSize.width - 60) / 2;
+    double _hCard = (_screenSize.height) / 4;
 
     return Scaffold(
+      floatingActionButton:
+          marca.contacto != null ? _reservar(marca.contacto) : SizedBox(),
       body: ListView(
         children: <Widget>[
-
           header(
-            widget.params,
-            _orientation != Orientation.landscape 
-              ? _screenSize.height * .25 
-              : _screenSize.height * .55,
-            context   
-          ),
-
+              _orientation != Orientation.landscape
+                  ? _screenSize.height * .25
+                  : _screenSize.height * .55,
+              context),
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Text(
-              'Only Dance',
+              marca.marca,
               style: new TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: 19.0,
-                letterSpacing: 1.0
-              ),
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 19.0,
+                  letterSpacing: 1.0),
             ),
           ),
-          
-          body(),
-          button()
+          body(_wCard, _hCard),
+          redes()
         ],
       ),
     );
   }
 
-  Widget body() {
+  Widget _reservar(String contacto) {
+    return FloatingActionButton.extended(
+        icon: Icon(
+          Icons.add_to_home_screen,
+          color: Colors.white,
+        ),
+        label: Text(
+          'Reservar',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Theme.Colors.loginGradientEnd,
+        onPressed: () => _launchContacto(contacto));
+  }
 
-    List<String> images = [
-      'https://www.dhresource.com/0x0/f2/albu/g7/M00/80/E7/rBVaSVrxeFyAe-ihAAI5-jTbl6o547.jpg/3-colors-latin-dance-dresses-for-sale-dress.jpg',
-      'https://stylelovely.com/wp-content/uploads/vestidos_de_novia-baile-vestido_encaje-revolve_clothing.jpg',
-      'https://images-eu.ssl-images-amazon.com/images/I/31ajE11%2BEbL.jpg',
-      'https://www.goandance.com/es/media/images-manager/Post%20142/vestido-nur.jpg',
-      'https://www.dhresource.com/0x0/f2/albu/g7/M00/80/E7/rBVaSVrxeFyAe-ihAAI5-jTbl6o547.jpg/3-colors-latin-dance-dresses-for-sale-dress.jpg',
-      'https://stylelovely.com/wp-content/uploads/vestidos_de_novia-baile-vestido_encaje-revolve_clothing.jpg',
-      'https://images-eu.ssl-images-amazon.com/images/I/31ajE11%2BEbL.jpg',
-      'https://www.goandance.com/es/media/images-manager/Post%20142/vestido-nur.jpg'
-    ];
-
+  Widget body(double width, double height) {
+    List<Articulo> articulos = marca.articulos;
     return Wrap(
-      children: List.generate(images.length, (index) => article(images[index])),
+      children: List.generate(articulos.length,
+          (index) => article(articulos[index], width, height)),
     );
   }
 
-  Widget article(String image){
+  Widget article(Articulo articulo, double width, double height) {
+    String precio = '\u{0024}' + articulo.precio.toString();
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10.0),
-      child: Stack(
-        alignment: Alignment.bottomLeft,
-        children: <Widget>[
-          Container(
-            width: (MediaQuery.of(context).size.width - 60 ) / 2,
-            height: (MediaQuery.of(context).size.height) / 4,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: FadeInImage(
-                image: NetworkImage(image),
-                placeholder: AssetImage('assets/img/tempo.gif'),
-                fit: BoxFit.cover,
-              ),
+      child: Stack(alignment: Alignment.bottomLeft, children: <Widget>[
+        Container(
+          width: width,
+          height: height,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+              image: NetworkImage(articulo.imagen),
+              placeholder: AssetImage('assets/img/tempo.gif'),
+              fit: BoxFit.cover,
             ),
           ),
-          Container(
-            height: (MediaQuery.of(context).size.height) / 4,
-            width: (MediaQuery.of(context).size.width - 60 ) / 2,
-            padding: EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
+        ),
+        Container(
+          width: width,
+          height: height,
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
               color: Colors.white,
               gradient: LinearGradient(
-                begin: FractionalOffset.topCenter,
-                end: FractionalOffset.bottomCenter,
-                colors: [
-                  //Theme.Colors.loginGradientEnd.withOpacity(0.0),
-                  //Theme.Colors.loginGradientStart,
-                  Colors.black12,
-                  Colors.black87,
-                ],
-                stops: [
-                  0.6,
-                  1.0
-                ]
-              )
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  'Vestido dama',
-                  overflow: TextOverflow.ellipsis,
-                  style: new TextStyle(
+                  begin: FractionalOffset.topCenter,
+                  end: FractionalOffset.bottomCenter,
+                  colors: [
+                    //Theme.Colors.loginGradientEnd.withOpacity(0.0),
+                    //Theme.Colors.loginGradientStart,
+                    Colors.black12,
+                    Colors.black87,
+                  ],
+                  stops: [
+                    0.6,
+                    1.0
+                  ])),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                articulo.articulo,
+                overflow: TextOverflow.ellipsis,
+                style: new TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w300,
-                    fontSize: 17.0
-                  ),
-                ),
-                Text(
-                  '\u{0024}350.0',
-                  overflow: TextOverflow.ellipsis,
-                  style: new TextStyle(
+                    fontSize: 17.0),
+              ),
+              Text(
+                precio,
+                overflow: TextOverflow.ellipsis,
+                style: new TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 17.0
-                  ),
-                ),
-              ],
-            ),
+                    fontSize: 17.0),
+              ),
+            ],
           ),
-        ] 
-      ),
+        ),
+      ]),
     );
   }
 
-  Widget header(List<dynamic> params, double alto, context){
-
+  Widget header(double alto, context) {
     return Stack(
       alignment: Alignment(.5, 1.0),
       children: <Widget>[
@@ -165,12 +156,11 @@ class _ArticlesPageState extends State<ArticlesPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(30),
             child: Hero(
-              tag: widget.params[1],
-              child: Image.asset(
-                params[0],
-                fit: BoxFit.cover,
-              )
-            ),
+                tag: tagId,
+                child: Image.network(
+                  marca.imagen,
+                  fit: BoxFit.cover,
+                )),
           ),
         ),
         Container(
@@ -185,7 +175,10 @@ class _ArticlesPageState extends State<ArticlesPage> {
                     shape: StadiumBorder(),
                     color: Colors.black26,
                     onPressed: () => Navigator.pop(context),
-                    child: Icon(Icons.arrow_back, color: Colors.white,),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -196,27 +189,10 @@ class _ArticlesPageState extends State<ArticlesPage> {
     );
   }
 
-  Widget button(){
-    return Container(
-      decoration: Theme.Colors.myBoxDecButton,
-      child: MaterialButton(
-        onPressed: (){},
-        child: MaterialButton(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
-            child: Text(
-              "VISITAR",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 25.0,
-                fontFamily: "WorkSansBold"
-              ),
-            ),
-          ),
-          onPressed:(){}
-        )
-      )
+  Widget redes() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RedesWrap(redes: marca.redes),
     );
   }
-
 }

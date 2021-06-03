@@ -14,8 +14,8 @@ class MyEventspage extends StatefulWidget {
 }
 
 class _MyEventspageState extends State<MyEventspage> {
-
-  final GlobalKey<ScaffoldState> _scaffoldstate = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldstate =
+      new GlobalKey<ScaffoldState>();
   final EventsBloc _eventsBloc = new EventsBloc();
 
   @override
@@ -39,59 +39,52 @@ class _MyEventspageState extends State<MyEventspage> {
         backgroundColor: Theme.Colors.loginGradientEnd,
       ),
       body: StreamBuilder<bool>(
-        stream: _eventsBloc.isLoadingController.stream,
-        initialData: false,
-        builder: (context, snapshot) {
-          return Column(
-            children: <Widget>[
-              Expanded(
-                child: NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification scrollInfo) {
-                    if(
-                      !snapshot.data &&
-                      scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-                      scrollInfo is ScrollEndNotification
-                    )
-                      _eventsBloc.loadMore();
+          stream: _eventsBloc.isLoadingController.stream,
+          initialData: false,
+          builder: (context, snapshot) {
+            return Column(
+              children: <Widget>[
+                Expanded(
+                    child: NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (!snapshot.data &&
+                              scrollInfo.metrics.pixels ==
+                                  scrollInfo.metrics.maxScrollExtent &&
+                              scrollInfo is ScrollEndNotification)
+                            _eventsBloc.loadMore();
 
-                    return true;
-                  },
-                  child: _body()
-                )  
-              ),
-              Container(
-                height: snapshot.data ? 50.0 : 0,
-                child: _loader()
-              ),
-            ],
-          );
-        }
-      ),
+                          return true;
+                        },
+                        child: _body())),
+                Container(height: snapshot.data ? 50.0 : 0, child: _loader()),
+              ],
+            );
+          }),
     );
   }
 
-  void _delete(String _evento, int _eventoId) async{
-        
+  void _delete(String _evento, int _eventoId) async {
     _eventsBloc.delEvento(_eventoId);
 
-    var _snackBar = SnackBar(
-      content: Text('Se eliminó: "$_evento"')
-    );
+    var _snackBar = SnackBar(content: Text('Se eliminó: "$_evento"'));
 
     _scaffoldstate.currentState.showSnackBar(_snackBar);
   }
 
   Widget _empty() {
-    
     final _orientation = MediaQuery.of(context).orientation;
 
     final List<Widget> _items = [
-      Expanded(child: NoInfo(svg: 'events.svg', text: 'Tu lista esta vacia.',)),
+      Expanded(
+          child: NoInfo(
+        svg: 'events.svg',
+        text: 'Tu lista esta vacia.',
+      )),
       Expanded(
         child: Column(
-          mainAxisAlignment: _orientation != Orientation.landscape 
-            ? MainAxisAlignment.start
-            : MainAxisAlignment.center,
+          mainAxisAlignment: _orientation != Orientation.landscape
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -99,77 +92,74 @@ class _MyEventspageState extends State<MyEventspage> {
                 'No dejes que eso te detenga, descubre más sociales.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold
-                ),
+                    color: Colors.black54, fontWeight: FontWeight.bold),
               ),
             ),
             floatinButton()
           ],
         ),
       )
-    ]; 
-    
-    return _orientation != Orientation.landscape 
-      ? Column(
-        children: _items,
-      ) 
-      : Row(
-        children: _items,
-      );
+    ];
+
+    return _orientation != Orientation.landscape
+        ? Column(
+            children: _items,
+          )
+        : Row(
+            children: _items,
+          );
   }
 
-  Widget floatinButton(){
+  Widget floatinButton() {
     return FloatingActionButton.extended(
       backgroundColor: Theme.Colors.loginGradientStart,
-      icon: Icon(Icons.search),
-      label: Text('Buscar'),
-      onPressed: () => Navigator.of(context).pushNamed('/results'), 
+      icon: Icon(
+        Icons.search,
+        color: Colors.white,
+      ),
+      label: Text(
+        'Buscar',
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: () => Navigator.of(context).pushNamed('/results'),
     );
   }
 
   Widget _body() {
     return StreamBuilder<List<EventModelResponse>>(
-      stream: _eventsBloc.eventsController.stream,
-      builder: (context, AsyncSnapshot<List<EventModelResponse>> snapshot) {
-        
-        if (snapshot.hasData){
+        stream: _eventsBloc.eventsController.stream,
+        builder: (context, AsyncSnapshot<List<EventModelResponse>> snapshot) {
+          if (snapshot.hasData) {
+            List<EventModelResponse> _eventos = snapshot.data;
 
-          List<EventModelResponse> _eventos = snapshot.data;
-
-          if(_eventos.length > 0)
-            return ListView.builder(
-              itemCount: _eventos.length,
-              itemBuilder: (BuildContext ctxt, int index) {
-                return item(_eventos[index]);
-              }
-            );
-
-          else
-            return _empty();
-        }
-        
-        else return _loader();
-      }
-    );
+            if (_eventos.length > 0)
+              return ListView.builder(
+                  itemCount: _eventos.length,
+                  itemBuilder: (BuildContext ctxt, int index) {
+                    return item(_eventos[index]);
+                  });
+            else
+              return _empty();
+          } else
+            return _loader();
+        });
   }
 
-  Widget _loader(){
+  Widget _loader() {
     return Center(
       child: CircularProgressIndicator(),
-    );  
+    );
   }
 
   Widget item(EventModelResponse evento) {
     return Dismissible(
-      key: Key(evento.eventoId.toString()),
-      background: slideRightBackground(),
-      secondaryBackground: slideLeftBackground(),
-      onDismissed: (direction) {
-        _delete(evento.titulo, evento.eventoId);
-      },
-      child: EventResult(evento: evento)
-    );
+        key: Key(evento.eventoId.toString()),
+        background: slideRightBackground(),
+        secondaryBackground: slideLeftBackground(),
+        onDismissed: (direction) {
+          _delete(evento.titulo, evento.eventoId);
+        },
+        child: EventResult(evento: evento));
   }
 
   Widget slideLeftBackground() {
@@ -229,5 +219,4 @@ class _MyEventspageState extends State<MyEventspage> {
       ),
     );
   }
-
 }

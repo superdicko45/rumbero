@@ -9,10 +9,12 @@ class Academia {
   String descripcion;
   String perfilImagen;
   String pagina;
+  String contacto;
   String telefono;
   String horario;
   String costos;
   String eslogan;
+  String video;
   int rangoMin;
   int rangoMax;
   String createdAt;
@@ -28,54 +30,56 @@ class Academia {
   bool error;
   Promo promo;
 
-  Academia({
-    this.academiasId,
-    this.nombre,
-    this.descripcion,
-    this.perfilImagen,
-    this.pagina,
-    this.telefono,
-    this.horario,
-    this.costos,
-    this.eslogan,
-    this.rangoMin,
-    this.rangoMax,
-    this.createdAt,
-    this.updateAt,
-    this.activo,
-    this.stars,
-    this.total,
-    this.redes,
-    this.promo,
-    this.galeria,
-    this.resenas,
-    this.sucursales,
-    this.raking
-  });
+  Academia(
+      {this.academiasId,
+      this.nombre,
+      this.descripcion,
+      this.perfilImagen,
+      this.pagina,
+      this.contacto,
+      this.telefono,
+      this.horario,
+      this.costos,
+      this.eslogan,
+      this.rangoMin,
+      this.rangoMax,
+      this.createdAt,
+      this.updateAt,
+      this.activo,
+      this.stars,
+      this.total,
+      this.redes,
+      this.promo,
+      this.galeria,
+      this.resenas,
+      this.sucursales,
+      this.raking});
 
   Academia.fromJson(Map<String, dynamic> json) {
-
-    if(json['academia'] != null){
-      academiasId  = json['academia']['academias_id'];
-      nombre       = json['academia']['nombre'];
-      descripcion  = json['academia']['descripcion'];
+    if (json['academia'] != null) {
+      academiasId = json['academia']['academias_id'];
+      nombre = json['academia']['nombre'];
+      descripcion = json['academia']['descripcion'];
       perfilImagen = json['academia']['perfil_imagen'];
-      pagina       = json['academia']['pagina'];
-      telefono     = json['academia']['telefono'];
-      horario      = json['academia']['horario'];
-      costos       = json['academia']['costos'];
-      eslogan      = json['academia']['eslogan'];
-      rangoMin     = json['academia']['rango_min'];
-      rangoMax     = json['academia']['rango_max'];
-      createdAt    = json['academia']['created_at'];
-      updateAt     = json['academia']['update_at'];
-      activo       = json['academia']['activo'];
+      pagina = json['academia']['pagina'];
+      contacto = json['academia']['contacto'];
+      telefono = json['academia']['telefono'];
+      horario = json['academia']['horario'];
+      video = json['academia']['video'];
+      costos = json['academia']['costos'];
+      eslogan = json['academia']['eslogan'];
+      rangoMin = json['academia']['rango_min'];
+      rangoMax = json['academia']['rango_max'];
+      createdAt = json['academia']['created_at'];
+      updateAt = json['academia']['update_at'];
+      activo = json['academia']['activo'];
+      error = false;
     }
-    
-    stars        = json['ranking']['stars'];
-    total        = json['ranking']['total'];
-    raking       = json['stars'];
-    
+
+    stars = json['ranking']['stars'];
+    total = json['ranking']['total'];
+    raking = json['stars'];
+
     promo = json['promo'] != null ? new Promo.fromJson(json['promo']) : null;
 
     if (json['redes'] != null) {
@@ -105,10 +109,9 @@ class Academia {
         resenas.add(new Resena.fromJson(v));
       });
     }
-
   }
 
-  Academia.withError() : error = true;  
+  Academia.withError() : error = true;
 }
 
 class Sucursales {
@@ -127,37 +130,36 @@ class Sucursales {
   int activo;
   List<Category> categorias;
 
-  Sucursales({
-    this.ciudad,
-    this.sucursalId,
-    this.academiaId,
-    this.imagen,
-    this.sucursal,
-    this.ciudadId,
-    this.colonia,
-    this.online,
-    this.week,
-    this.weekend,
-    this.latitud,
-    this.longitud,
-    this.activo,
-    this.categorias
-  });
+  Sucursales(
+      {this.ciudad,
+      this.sucursalId,
+      this.academiaId,
+      this.imagen,
+      this.sucursal,
+      this.ciudadId,
+      this.colonia,
+      this.online,
+      this.week,
+      this.weekend,
+      this.latitud,
+      this.longitud,
+      this.activo,
+      this.categorias});
 
   Sucursales.fromJson(Map<String, dynamic> json) {
-    ciudad     = json['ciudad'];
+    ciudad = json['ciudad'];
     sucursalId = json['sucursal_id'];
     academiaId = json['academia_id'];
-    imagen     = json['imagen'];
-    sucursal   = json['sucursal'];
-    ciudadId   = json['ciudad_id'];
-    colonia    = json['colonia'];
-    online     = json['online'];
-    week       = json['week'];
-    weekend    = json['weekend'];
-    latitud    = json['latitud'];
-    longitud   = json['longitud'];
-    activo     = json['activo'];
+    imagen = json['imagen'];
+    sucursal = json['sucursal'];
+    ciudadId = json['ciudad_id'];
+    colonia = json['colonia'];
+    online = json['online'];
+    week = json['week'];
+    weekend = json['weekend'];
+    latitud = json['latitud'];
+    longitud = json['longitud'];
+    activo = json['activo'];
 
     if (json['tags'] != null) {
       categorias = new List<Category>();
@@ -165,25 +167,41 @@ class Sucursales {
         categorias.add(new Category.fromJson(v));
       });
     }
-    
   }
 }
 
 class Promo {
   int promoId;
   String promo;
+  int academiaId;
+  int limite;
+  String imagen;
+  String descripcion;
+  String caducidad;
+  int activo;
+  String createdAt;
+  bool vacio;
 
-  Promo({this.promoId, this.promo});
+  Promo(
+      {this.promoId,
+      this.promo,
+      this.academiaId,
+      this.limite,
+      this.imagen,
+      this.descripcion,
+      this.caducidad,
+      this.activo,
+      this.createdAt});
 
   Promo.fromJson(Map<String, dynamic> json) {
     promoId = json['promo_id'];
     promo = json['promo'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['promo_id'] = this.promoId;
-    data['promo'] = this.promo;
-    return data;
+    academiaId = json['academia_id'];
+    limite = json['limite'];
+    imagen = json['imagen'];
+    descripcion = json['descripcion'];
+    caducidad = json['caducidad'];
+    activo = json['activo'];
+    createdAt = json['created_at'];
   }
 }

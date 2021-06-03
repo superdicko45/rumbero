@@ -19,7 +19,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  
   int selectedIndex = 0;
   PageController controller = PageController();
   MainBloc _mainBloc = new MainBloc();
@@ -33,11 +32,10 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      appBar: _appBar(),
-      body: _body(),
-      bottomNavigationBar: _bottomNavigator()
-    );
+        extendBody: true,
+        appBar: _appBar(),
+        body: _body(),
+        bottomNavigationBar: _bottomNavigator());
   }
 
   void launchIntro() async {
@@ -46,63 +44,44 @@ class _MainPageState extends State<MainPage> {
     prefs.setBool('launch', false);
     if (launch) {
       Navigator.of(context).pushNamed("/intro");
-    }
-    else{
+    } else {
       _mainBloc.indexController;
       initialDate();
-    } 
+    }
   }
 
-  Future<void> initialDate() async{
+  Future<void> initialDate() async {
     await initializeDateFormatting('es_ES');
   }
 
   void _changePage(int index, bool changePage) {
     _mainBloc.changeIndex(index);
-    if(changePage) controller.jumpToPage(index);
+    if (changePage) controller.jumpToPage(index);
   }
 
-  Widget _bottomNavigator(){
-
+  Widget _bottomNavigator() {
     final List<Map<String, dynamic>> _items = [
-      {
-        'icon' : FontAwesomeIcons.home,
-        'text' : 'Inicio'
-      },
-      {
-        'icon' : FontAwesomeIcons.solidCalendarCheck,
-        'text' : 'Eventos'
-      },
-      {
-        'icon' : FontAwesomeIcons.shoppingBag,
-        'text' : 'Artículos'
-      },
-      {
-        'icon' : FontAwesomeIcons.graduationCap,
-        'text' : 'Academias'
-      },
-      {
-        'icon' : FontAwesomeIcons.userAlt,
-        'text' : 'Perfil'
-      }
+      {'icon': FontAwesomeIcons.home, 'text': 'Inicio'},
+      {'icon': FontAwesomeIcons.solidCalendarCheck, 'text': 'Eventos'},
+      {'icon': FontAwesomeIcons.shoppingBag, 'text': 'Artículos'},
+      {'icon': FontAwesomeIcons.graduationCap, 'text': 'Academias'},
+      {'icon': FontAwesomeIcons.userAlt, 'text': 'Perfil'}
     ];
 
     List<GButton> _iconButns = new List<GButton>();
 
     _items.forEach((element) {
-      _iconButns.add(
-        new GButton(
-          gap: 10.0,
-          iconActiveColor: Colors.white,
-          iconColor: Colors.white38,
-          textColor: Colors.white,
-          backgroundColor: Colors.white.withOpacity(.2),
-          iconSize: 24,
-          padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
-          icon: element['icon'],
-          text: '', //element['text'],
-        )
-      );
+      _iconButns.add(new GButton(
+        gap: 10.0,
+        iconActiveColor: Colors.white,
+        iconColor: Colors.white38,
+        textColor: Colors.white,
+        backgroundColor: Colors.white.withOpacity(.2),
+        iconSize: 24,
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+        icon: element['icon'],
+        text: '', //element['text'],
+      ));
     });
 
     return SafeArea(
@@ -112,41 +91,33 @@ class _MainPageState extends State<MainPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
           child: StreamBuilder<int>(
-            stream: _mainBloc.indexController.stream,
-            initialData: 0,
-            builder: (context, snapshot) {
-              return GNav(
-                tabs: _iconButns,
-                selectedIndex: snapshot.data,
-                onTabChange: (index) => _changePage(index, true)
-              );
-            }
-          ),
+              stream: _mainBloc.indexController.stream,
+              initialData: 0,
+              builder: (context, snapshot) {
+                return GNav(
+                    tabs: _iconButns,
+                    selectedIndex: snapshot.data,
+                    onTabChange: (index) => _changePage(index, true));
+              }),
         ),
       ),
     );
   }
 
-  Widget _appBar(){
+  Widget _appBar() {
     return AppBar(
       backgroundColor: Theme.Colors.loginGradientStart,
-      title: Text('Ya sabes donde ir?'),
-      leading: FlutterLogo(),
+      title: Text('¿Ya sabes donde ir?'),
+      leading: Image.asset('assets/img/isotipo.png'),
       actions: <Widget>[
-        
         IconButton(
-          icon: Icon(FontAwesomeIcons.userAlt),
-          onPressed: () => Navigator.of(context).pushNamed('/results')
-        ),
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () => Navigator.of(context).pushNamed('/results')
-        ),
+            icon: Icon(Icons.search),
+            onPressed: () => Navigator.of(context).pushNamed('/results')),
       ],
     );
   }
 
-  Widget _body(){
+  Widget _body() {
     return PageView(
       controller: controller,
       onPageChanged: (index) => _changePage(index, false),
@@ -159,6 +130,4 @@ class _MainPageState extends State<MainPage> {
       ],
     );
   }
-
 }
-
